@@ -287,10 +287,14 @@ function renderDashboard() {
     <div class="grid-2-1">
       <div class="card">
         <div class="card-header"><h2>Incassi Settimanali</h2><span style="font-size:11px;color:var(--text-muted)">Ultimi 7 giorni</span></div>
-        <div class="chart">${settimana.map((s, i) => {
-          const h = s.totale > 0 ? Math.max(6, (s.totale / maxSet) * 100) : 4;
+        <div class="chart" style="display:flex;align-items:flex-end;gap:12px;height:200px;padding:8px 0">${settimana.map((s, i) => {
+          const h = s.totale > 0 ? Math.max(10, (s.totale / maxSet) * 170) : 4;
           const isToday = i === 6;
-          return `<div class="chart-col"><div class="chart-bar" style="height:${h}%;background:${isToday ? "var(--accent-gradient)" : "rgba(124,58,237,.4)"}" title="${fmt(s.totale)}"></div><span class="chart-lbl">${dayLabel(s.data)}</span></div>`;
+          const bg = isToday ? "linear-gradient(180deg,#7c3aed,#a78bfa)" : "rgba(124,58,237,.45)";
+          return `<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;height:100%">
+            <div title="${fmt(s.totale)}" style="width:100%;max-width:40px;height:${h}px;background:${bg};border-radius:6px 6px 0 0"></div>
+            <span style="font-size:11px;color:#94a3b8;font-weight:500">${dayLabel(s.data)}</span>
+          </div>`;
         }).join("")}</div>
       </div>
       <div class="card">
@@ -734,10 +738,14 @@ function renderIncassi() {
     <div class="grid-2-1">
       <div class="card">
         <div class="card-header"><h2>Andamento ${incFilter === "mese" ? "ultimi 30 giorni" : incFilter === "settimana" ? "ultimi 7 giorni" : incFilter === "oggi" ? "di oggi" : "completo"}</h2><span style="font-size:11px;color:var(--text-muted)">Totale ${fmt(totale)}</span></div>
-        <div class="chart" style="${nGiorni > 14 ? "gap:3px" : ""}">${graf.map((s, i) => {
-          const h = s.totale > 0 ? Math.max(4, (s.totale / maxG) * 100) : 3;
+        <div class="chart" style="display:flex;align-items:flex-end;gap:${nGiorni > 14 ? "3" : "12"}px;height:200px;padding:8px 0">${graf.map((s, i) => {
+          const h = s.totale > 0 ? Math.max(6, (s.totale / maxG) * 170) : 3;
           const isLast = i === graf.length - 1;
-          return `<div class="chart-col"><div class="chart-bar" style="height:${h}%;background:${isLast ? "var(--accent-gradient)" : "rgba(124,58,237,.4)"}" title="${dateStr(s.data)}: ${fmt(s.totale)}"></div><span class="chart-lbl" style="${nGiorni > 14 ? "font-size:9px" : ""}">${nGiorni > 14 ? s.data.getDate() : dayLabel(s.data)}</span></div>`;
+          const bg = isLast ? "linear-gradient(180deg,#7c3aed,#a78bfa)" : "rgba(124,58,237,.45)";
+          return `<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;height:100%">
+            <div title="${dateStr(s.data)}: ${fmt(s.totale)}" style="width:100%;max-width:40px;height:${h}px;background:${bg};border-radius:6px 6px 0 0"></div>
+            <span style="font-size:${nGiorni > 14 ? "9" : "11"}px;color:#94a3b8;font-weight:500">${nGiorni > 14 ? s.data.getDate() : dayLabel(s.data)}</span>
+          </div>`;
         }).join("")}</div>
       </div>
       <div class="card">
