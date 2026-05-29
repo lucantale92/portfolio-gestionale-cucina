@@ -515,3 +515,190 @@ body{
   .stats-row,.orders-status,.res-grid{grid-template-columns:1fr}
   .tables-grid{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ===================================================
+   AGGIUNTE v4: incassi, comanda evoluta, modali wide
+   =================================================== */
+
+/* Modal wide per comanda e incasso */
+.modal.modal-wide { max-width: 720px; }
+
+/* Layout comanda: menu sinistra, carrello destra */
+.comanda-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 8px;
+}
+.comanda-menu, .comanda-cart {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 14px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.menu-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--white);
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: all .15s;
+  gap: 8px;
+}
+.menu-item-row:hover {
+  background: var(--accent-light);
+  transform: translateX(2px);
+}
+.menu-item-plus {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+  flex-shrink: 0;
+}
+.cart-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--white);
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+.qty-ctrl {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.qty-ctrl button {
+  width: 24px; height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+.qty-ctrl button:hover { background: var(--accent); color: #fff; }
+.qty-ctrl span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dark);
+  padding: 0 8px;
+  min-width: 24px;
+  text-align: center;
+}
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 2px solid var(--border);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+/* Ricevuta nel modale incasso */
+.receipt {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 12px 14px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--text-dark);
+}
+.receipt-sep {
+  border-top: 1px dashed var(--border);
+  margin: 10px 0;
+}
+.big-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin-top: 16px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.big-total span:last-child { font-size: 22px; font-weight: 800; }
+
+/* Opzioni metodo pagamento */
+.pag-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+.pag-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all .15s;
+}
+.pag-opt input { display: none; }
+.pag-bullet {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--white);
+  flex-shrink: 0;
+  position: relative;
+  transition: all .15s;
+}
+.pag-opt input:checked ~ .pag-bullet {
+  border-color: var(--col);
+  background: var(--col);
+  box-shadow: inset 0 0 0 3px var(--white);
+}
+.pag-opt input:checked ~ .pag-label { color: var(--col); font-weight: 700; }
+.pag-opt:hover { border-color: var(--col); }
+.pag-label { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+
+/* Bar tracks per metodi pagamento */
+.bar-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .4s ease;
+}
+
+/* Order items con prezzo a destra */
+.order-item { overflow: hidden; }
+
+/* Responsive */
+@media (max-width: 720px) {
+  .comanda-layout { grid-template-columns: 1fr; }
+  .comanda-menu, .comanda-cart { max-height: 240px; }
+  .pag-grid { grid-template-columns: 1fr; }
+}
