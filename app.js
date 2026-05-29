@@ -4,6 +4,14 @@
 // ===================================================
 
 const STORAGE_KEY = "tavola_v4_data";
+const APP_VERSION = "v4.0";
+
+// Forzato reset se è la prima volta che parte la v4 (per pulire dati vecchi v3)
+if (!localStorage.getItem("tavola_version") || localStorage.getItem("tavola_version") !== APP_VERSION) {
+  // pulizia di tutte le chiavi vecchie
+  Object.keys(localStorage).forEach(k => { if (k.startsWith("tavola")) localStorage.removeItem(k); });
+  localStorage.setItem("tavola_version", APP_VERSION);
+}
 
 // ===== PAGE TITLES =====
 const TITLES = {
