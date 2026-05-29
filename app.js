@@ -290,7 +290,7 @@ function renderDashboard() {
         <div class="chart">${settimana.map((s, i) => {
           const h = s.totale > 0 ? Math.max(6, (s.totale / maxSet) * 100) : 4;
           const isToday = i === 6;
-          return `<div class="chart-col"><div class="chart-bar" style="height:${h}%;background:${isToday ? "var(--accent-gradient)" : "var(--accent-light)"}" title="${fmt(s.totale)}"></div><span class="chart-lbl">${dayLabel(s.data)}</span></div>`;
+          return `<div class="chart-col"><div class="chart-bar" style="height:${h}%;background:${isToday ? "var(--accent-gradient)" : "rgba(124,58,237,.4)"}" title="${fmt(s.totale)}"></div><span class="chart-lbl">${dayLabel(s.data)}</span></div>`;
         }).join("")}</div>
       </div>
       <div class="card">
@@ -737,7 +737,7 @@ function renderIncassi() {
         <div class="chart" style="${nGiorni > 14 ? "gap:3px" : ""}">${graf.map((s, i) => {
           const h = s.totale > 0 ? Math.max(4, (s.totale / maxG) * 100) : 3;
           const isLast = i === graf.length - 1;
-          return `<div class="chart-col"><div class="chart-bar" style="height:${h}%;background:${isLast ? "var(--accent-gradient)" : "var(--accent-light)"}" title="${dateStr(s.data)}: ${fmt(s.totale)}"></div><span class="chart-lbl" style="${nGiorni > 14 ? "font-size:9px" : ""}">${nGiorni > 14 ? s.data.getDate() : dayLabel(s.data)}</span></div>`;
+          return `<div class="chart-col"><div class="chart-bar" style="height:${h}%;background:${isLast ? "var(--accent-gradient)" : "rgba(124,58,237,.4)"}" title="${dateStr(s.data)}: ${fmt(s.totale)}"></div><span class="chart-lbl" style="${nGiorni > 14 ? "font-size:9px" : ""}">${nGiorni > 14 ? s.data.getDate() : dayLabel(s.data)}</span></div>`;
         }).join("")}</div>
       </div>
       <div class="card">
