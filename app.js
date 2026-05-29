@@ -377,7 +377,7 @@ function salvaPrenotazione() {
 
 function modalDettaglioTavolo(id) {
   const t = data.tavoli.find(x => x.id === id);
-  const ordiniTavolo = data.ordini.filter(o => o.tavolo === id && o.stato !== "servito");
+  const ordiniTavolo = data.ordini.filter(o => o.tavolo === id && !o.pagato);
   const totConto = calcolaTotaleTavolo(id);
   showModal(`
     <h2>Tavolo ${t.id}</h2>
@@ -403,8 +403,10 @@ function modalDettaglioTavolo(id) {
       ${t.stato === "prenotato" ? `<button class="btn-save" style="background:var(--green-gradient)" onclick="cambiaStatoTavolo(${t.id},'occupato')">Accomoda Ospiti</button><button class="btn-cancel" onclick="cambiaStatoTavolo(${t.id},'libero')">Cancella Prenotazione</button>` : ""}
       ${t.stato === "occupato" ? `
         <button class="btn-save" onclick="closeModal();modalNuovaComanda(${t.id})">+ Nuova Comanda</button>
-        ${totConto > 0 ? `<button class="btn-save" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="closeModal();modalIncassa(${t.id})">💳 Fai il Conto · ${fmt(totConto)}</button>` : ""}
-        <button class="btn-cancel" style="border-color:var(--red);color:var(--red)" onclick="cambiaStatoTavolo(${t.id},'libero')">Libera Tavolo</button>
+        ${totConto > 0
+          ? `<button class="btn-save" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="closeModal();modalIncassa(${t.id})">💳 Fai il Conto · ${fmt(totConto)}</button>`
+          : `<button class="btn-cancel" style="border-color:var(--red);color:var(--red)" onclick="cambiaStatoTavolo(${t.id},'libero')">Libera Tavolo</button>`
+        }
       ` : ""}
     </div>
   `);
@@ -413,10 +415,10 @@ function modalDettaglioTavolo(id) {
 function cambiaStatoTavolo(id, stato) {
   const t = data.tavoli.find(x => x.id === id);
   if (stato === "libero") {
-    // se ci sono ordini non incassati, avvisa
-    const aperti = data.ordini.filter(o => o.tavolo === id && o.stato !== "servito");
-    if (aperti.length && !confirm(`Il tavolo ha ${aperti.length} ordini ancora aperti. Libero comunque (ordini cancellati)?`)) return;
-    data.ordini = data.ordini.filter(o => o.tavolo !== id || o.stato === "servito");
+    // se ci sono ordini non pagati, avvisa
+    const aperti = data.ordini.filter(o => o.tavolo === id && !o.pagato);
+    if (aperti.length && !confirm(`Il tavolo ha ${aperti.length} ordini ancora da pagare. Libero comunque (ordini cancellati)?`)) return;
+    data.ordini = data.ordini.filter(o => o.tavolo !== id || o.pagato);
     t.stato = "libero"; t.ospite = ""; t.ora = ""; t.telefono = ""; t.note = "";
   } else { t.stato = stato; }
   closeModal(); render();
@@ -428,7 +430,7 @@ function calcolaTotaleOrdine(o) {
   return 0;
 }
 function calcolaTotaleTavolo(id) {
-  return data.ordini.filter(o => o.tavolo === id && o.stato !== "servito").reduce((a, o) => a + calcolaTotaleOrdine(o), 0);
+  return data.ordini.filter(o => o.tavolo === id && !o.pagato).reduce((a, o) => a + calcolaTotaleOrdine(o), 0);
 }
 
 // ===== ORDINI =====
@@ -562,7 +564,7 @@ function salvaComanda() {
     const p = data.piatti.find(pp => pp.id === c.piattoId);
     return { piattoId: p.id, nome: p.nome, prezzo: p.prezzo, qta: c.qta };
   });
-  data.ordini.unshift({ id: data.nextOrdId++, tavolo: tid, items, stato: "nuovo", tempo: "Ora", note: notes });
+  data.ordini.unshift({ id: data.nextOrdId++, tavolo: tid, items, stato: "nuovo", tempo: "Ora", note: notes, pagato: false });
   comandaCart = [];
   closeModal(); render(); toast(`Comanda #${data.nextOrdId - 1} inviata in cucina`);
 }
@@ -583,7 +585,7 @@ function eliminaOrdine(id) {
 // ===== INCASSO TAVOLO =====
 function modalIncassa(tavoloId) {
   const t = data.tavoli.find(x => x.id === tavoloId);
-  const ordiniTav = data.ordini.filter(o => o.tavolo === tavoloId && o.stato !== "servito");
+  const ordiniTav = data.ordini.filter(o => o.tavolo === tavoloId && !o.pagato);
   if (!ordiniTav.length) { toast("Nessun ordine da incassare", "error"); return; }
 
   // raccolgo tutti gli items di tutti gli ordini
@@ -646,7 +648,7 @@ function applicaScontoPct(subtot) {
 
 function confermaIncasso(tavoloId) {
   const t = data.tavoli.find(x => x.id === tavoloId);
-  const ordiniTav = data.ordini.filter(o => o.tavolo === tavoloId && o.stato !== "servito");
+  const ordiniTav = data.ordini.filter(o => o.tavolo === tavoloId && !o.pagato);
   const allItems = [];
   ordiniTav.forEach(o => (o.items || []).forEach(i => allItems.push({ ...i })));
   const subtot = allItems.reduce((a, i) => a + i.prezzo * i.qta, 0);
@@ -668,8 +670,8 @@ function confermaIncasso(tavoloId) {
     metodo: metodo
   });
 
-  // marca ordini come serviti e libera tavolo
-  ordiniTav.forEach(o => { o.stato = "servito"; o.tempo = "Completato"; });
+  // marca ordini come pagati + serviti, libera tavolo
+  ordiniTav.forEach(o => { o.pagato = true; o.stato = "servito"; o.tempo = "Completato"; });
   t.stato = "libero"; t.ospite = ""; t.ora = ""; t.telefono = ""; t.note = "";
 
   closeModal(); render();
